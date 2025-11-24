@@ -17,21 +17,22 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import net.miginfocom.swing.MigLayout;
+import com.login.swing.MyPasswordField;
 
 
 public class PanelLoginAndRegistrer extends javax.swing.JLayeredPane {
 
   
     
-    public PanelLoginAndRegistrer() {
+    public PanelLoginAndRegistrer(ActionListener eventRegister) {
         initComponents();
-        initRegistrer();
+        initRegistrer(eventRegister);
         initLogin();
         Login.setVisible(false);
         Register.setVisible(true);
     }
     
-    private void initRegistrer(){
+    private void initRegistrer(ActionListener eventRegister){
     
         Register.setLayout(new MigLayout("wrap","push[center]push","push[]25[]10[]10[]15[]push")); //Distancia de los componentes.
         JLabel label=new JLabel("Crear una cuenta");
@@ -46,13 +47,14 @@ public class PanelLoginAndRegistrer extends javax.swing.JLayeredPane {
         txtGmail.setPrefixIcon(new ImageIcon(getClass().getResource("/com/login/icon/patas.png")));
         txtGmail.setHint("Gmail");
         Register.add(txtGmail, "w 60%");
-        MyTextField txtPassword = new MyTextField();
-        txtPassword.setPrefixIcon(new ImageIcon(getClass().getResource("/com/login/icon/patas.png")));
-        txtPassword.setHint("Contraseña");
-        Register.add(txtPassword, "w 60%");
+        MyPasswordField txtPass = new MyPasswordField();
+        txtPass.setPrefixIcon(new ImageIcon(getClass().getResource("/com/login/icon/patas.png")));
+        txtPass.setHint("Contraseña");
+        Register.add(txtPass, "w 60%");
         Button cmd= new Button();
         cmd.setBackground(new Color (255, 255, 191));
         cmd.setForeground(new Color (89, 140, 163));
+        cmd.addActionListener(eventRegister);
         cmd.setText("Crear");
         Register.add(cmd,"w 40%, h 40");
         
@@ -70,10 +72,10 @@ public class PanelLoginAndRegistrer extends javax.swing.JLayeredPane {
         txtGmail.setPrefixIcon(new ImageIcon(getClass().getResource("/com/login/icon/patas.png")));
         txtGmail.setHint("Gmail");
         Login.add(txtGmail, "w 60%");
-        MyTextField txtPassword = new MyTextField();
-        txtPassword.setPrefixIcon(new ImageIcon(getClass().getResource("/com/login/icon/patas.png")));
-        txtPassword.setHint("Contrasena");
-        Login.add(txtPassword, "w 60%");
+        MyPasswordField txtPass = new MyPasswordField();
+        txtPass.setPrefixIcon(new ImageIcon(getClass().getResource("/com/login/icon/patas.png")));
+        txtPass.setHint("Contrasena");
+        Login.add(txtPass, "w 60%");
         JButton cmdForget=new JButton("Olvidaste tu contrasena?");
         cmdForget.setForeground(new Color(100,100,100));
         cmdForget.setFont(new Font("sansserif",1,12));

@@ -1,11 +1,14 @@
 
 package com.login.main;
 
+import com.login.complement.Message;
 import com.login.complement.PanelCover;
 import com.login.complement.PanelLoginAndRegistrer;
+import com.login.complement.PanelLoading;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import javax.swing.JLayeredPane;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
@@ -20,6 +23,7 @@ public class Main extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Main.class.getName());
     private MigLayout layout;
     private PanelCover cover;
+    private PanelLoading carga;
     private PanelLoginAndRegistrer logAndReg;
     private boolean isLogin;
     private final double addSize=30;
@@ -35,7 +39,15 @@ public class Main extends javax.swing.JFrame {
     private void init(){
         layout = new MigLayout("fill, insets 0,");
         cover = new PanelCover();   
-        logAndReg= new PanelLoginAndRegistrer();
+        carga = new PanelLoading();
+        ActionListener eventRegister=new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent ae){
+               register(); 
+            }
+        };
+                
+        logAndReg= new PanelLoginAndRegistrer(eventRegister);
         TimingTarget target=new TimingTargetAdapter(){
         
             @Override
@@ -96,6 +108,8 @@ public class Main extends javax.swing.JFrame {
         animator.setDeceleration(0.5f);
         animator.setResolution(0); //Para una aniamcion mas suave
         bg.setLayout(layout);
+        bg.setLayer(carga, JLayeredPane.POPUP_LAYER);
+        bg.add(carga, "pos 0 0 100% 100%");
         bg.add(cover,"width "+coverSize+ "%, pos 0al 0 n 100%");
         bg.add(logAndReg,"width "+loginSize+ "%, pos 1al 0 n 100%");
         
@@ -113,7 +127,68 @@ public class Main extends javax.swing.JFrame {
     }
 
     
+    private void register(){
+        //carga.setVisible(true);
+        ShowMessage(Message.MessageType.ERROR,"Test_Message");
+    }
     
+    private void ShowMessage(Message.MessageType messageType, String message){
+        Message ms=new Message();
+        ms.showMessage(messageType, message);
+        TimingTarget target = new TimingTargetAdapter(){
+        
+            @Override
+            public void begin(){
+                if (!ms.isShow()){
+                   bg.add(ms,"pos 0.5al -30",0);
+                   ms.setVisible(true);
+                   bg.repaint();                 
+                }
+            }
+            
+            @Override
+            public void timingEvent(float fraction){
+                float f;
+                if (ms.isShow()){
+                    f= 40 * (1f - fraction);
+                }else{
+                    f= 40 * fraction;
+                }
+                layout.setComponentConstraints(ms,"pos 0.5al "+ (int) (f-30));
+                bg.repaint();
+                bg.revalidate();
+            }
+            
+            @Override
+            public void end(){
+                if(ms.isShow()){
+                    bg.remove(ms);
+                    bg.repaint();
+                    bg.revalidate();
+                }else{
+                    ms.setShow(true);
+                }
+            }
+        };
+        
+        Animator animator=new Animator(300, target);
+        animator.setResolution(0);
+        animator.setAcceleration(0.5f);
+        animator.setDeceleration(0.5f);
+        animator.start();
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    animator.start();
+                } catch (InterruptedException e) {
+                    System.err.println(e);
+                }
+            }
+        }).start();
+    }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
